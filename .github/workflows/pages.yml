@@ -27,8 +27,18 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Preparar arquivos estáticos
+      - name: Preparar fotos reais e arquivos estáticos
         run: |
+          set -euo pipefail
+          mkdir -p images
+          cat assets/photos-parts/part-*.b64 | base64 --decode > /tmp/fotos-jardinagem.zip
+          unzip -oq /tmp/fotos-jardinagem.zip -d images
+          test -f images/servicos-de-jardinagem/foto-16-jardim-gramado-comercial.jpeg
+          test -f images/poda-de-plantas/foto-04-cerca-viva-ornamental.jpeg
+          test -f images/rocagem-de-gramados/foto-08-talude-gramado-via.jpeg
+          test -f images/manutencao-de-jardins/foto-10-jardineira-circular-comercial.jpeg
+          test "$(find images -name '*.jpeg' | wc -l)" -eq 22
+          rm -rf assets/photos-parts images/MAPEAMENTO_RENOMEACAO.csv
           touch .nojekyll
       - name: Criar artefato
         uses: actions/upload-pages-artifact@v3
