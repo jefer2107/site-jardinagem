@@ -19,7 +19,7 @@ Os templates contêm os caminhos catalogados para 22 fotos que estão no arquivo
 
 ## Pendências de publicação
 - Validar disponibilidade jurídica da marca candidata `Canteiva` no INPI e disponibilidade de domínio no Registro.br.
-- Configurar WhatsApp oficial; não há link falso para um número fictício.
+- WhatsApp informado pelo responsável: +55 31 99388-1201. Os links de contato usam `wa.me` e mensagens diferentes por página.
 - Adicionar imagens com direitos de uso confirmados; otimizar para WebP/AVIF.
 - Definir domínio e URL canônica para ativar sitemap com URLs absolutas, robots.txt e Search Console.
 - Validar fidelidade visual com os frames do Figma, principalmente mobile.
