@@ -27,6 +27,9 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Instalar ferramentas de otimização
+        run: |
+          python -m pip install --disable-pip-version-check Pillow==11.3.0 pillow-avif-plugin==1.5.2
       - name: Preparar fotos reais e arquivos estáticos
         run: |
           set -euo pipefail
@@ -38,6 +41,9 @@ jobs:
           test -f images/rocagem-de-gramados/foto-08-talude-gramado-via.jpeg
           test -f images/manutencao-de-jardins/foto-10-jardineira-circular-comercial.jpeg
           test "$(find images -name '*.jpeg' | wc -l)" -eq 22
+          python scripts/optimize_images.py
+          test "$(find images -name '*.webp' | wc -l)" -eq 66
+          test "$(find images -name '*.avif' | wc -l)" -eq 66
           rm -rf assets/photos-parts images/MAPEAMENTO_RENOMEACAO.csv
           touch .nojekyll
       - name: Criar artefato
