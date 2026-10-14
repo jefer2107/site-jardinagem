@@ -1,0 +1,64 @@
+name: Auditoria de layout e Lighthouse
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit.yml'
+      - 'scripts/audit_site.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar auditorias
+        run: npm install --no-save --no-package-lock puppeteer-core@24 lighthouse@12
+      - name: Encontrar Chrome
+        run: echo "CHROME_PATH=$(command -v google-chrome || command -v chromium)" >> "$GITHUB_ENV"
+      - name: Capturas desktop/mobile e validação de imagens
+        run: node scripts/audit_site.mjs
+      - name: Lighthouse mobile
+        if: always()
+        run: |
+          mkdir -p reports
+          npx lighthouse https://jefer2107.github.io/site-jardinagem/ --chrome-path="$CHROME_PATH" --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --preset=perf --form-factor=mobile --screenEmulation.mobile=true --screenEmulation.width=390 --screenEmulation.height=844 --screenEmulation.deviceScaleFactor=1 --output=json --output-path=reports/lighthouse-mobile.json
+      - name: Lighthouse desktop
+        if: always()
+        run: |
+          npx lighthouse https://jefer2107.github.io/site-jardinagem/ --chrome-path="$CHROME_PATH" --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" --preset=desktop --output=json --output-path=reports/lighthouse-desktop.json
+      - name: Resumo Lighthouse
+        if: always()
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          for (const mode of ['mobile', 'desktop']) {
+            const path = `reports/lighthouse-${mode}.json`;
+            if (!fs.existsSync(path)) continue;
+            const r = JSON.parse(fs.readFileSync(path));
+            const a = r.audits;
+            console.log('LIGHTHOUSE_SUMMARY ' + JSON.stringify({
+              mode,
+              performance: Math.round((r.categories.performance?.score ?? 0) * 100),
+              lcp: a['largest-contentful-paint']?.displayValue,
+              cls: a['cumulative-layout-shift']?.displayValue,
+              fcp: a['first-contentful-paint']?.displayValue,
+              tbt: a['total-blocking-time']?.displayValue
+            }));
+          }
+          NODE
+      - name: Salvar capturas e relatórios
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-site-jardinagem
+          path: reports/
+          if-no-files-found: warn
