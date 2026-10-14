@@ -32,7 +32,7 @@ try {
           horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 2,
           documentWidth: document.documentElement.scrollWidth,
           viewportWidth: window.innerWidth,
-          brokenImages: images.filter(x => !x.complete || x.naturalWidth === 0).map(x => x.src),
+          brokenImages: images.filter(x => x.hidden || !x.complete || x.naturalWidth === 0).map(x => x.src),
           images: images.map(x => ({ url: x.currentSrc, width: x.naturalWidth, height: x.naturalHeight }))
         };
       });
