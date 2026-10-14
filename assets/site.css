@@ -15,3 +15,6 @@
 /* Evidenciar o gramado na fotografia vertical de roçagem em cards. */
 .service-card .image-holder:has(img[src*="foto-08"]) picture img{object-position:center 10%}
 @media(max-width:700px){.service-card .image-holder:has(img[src*="foto-08"]) picture img{object-position:center 12%}}
+
+/* Evita quebra do ano no rodapé mobile. */
+@media(max-width:700px){.footer-bottom > span > span{display:inline}}

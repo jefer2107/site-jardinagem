@@ -3,12 +3,16 @@ document.addEventListener('error',event=>{
   const image=event.target;
   if(!(image instanceof HTMLImageElement))return;
   const figure=image.closest('figure');
-  if(image.dataset.fallbackAttempted==='true'){
-    figure?.classList.add('missing-image');
-    image.hidden=true;
+  const attempts=Number(image.dataset.loadAttempts||0)+1;
+  image.dataset.loadAttempts=String(attempts);
+  if(attempts===1){
+    image.closest('picture')?.querySelectorAll('source').forEach(source=>source.remove());
+  }
+  if(attempts<=2){
+    const jpeg=image.getAttribute('src');
+    window.setTimeout(()=>{image.src=jpeg+(jpeg.includes('?')?'&':'?')+'retry='+attempts;},attempts*700);
     return;
   }
-  image.dataset.fallbackAttempted='true';
-  image.closest('picture')?.querySelectorAll('source').forEach(source=>source.remove());
-  image.src=image.getAttribute('src');
+  figure?.classList.add('missing-image');
+  image.hidden=true;
 },true);

@@ -24,7 +24,8 @@ try {
           await delay(70);
         }
         window.scrollTo(0, 0);
-        await delay(500);
+        document.querySelectorAll('img').forEach(img=>img.loading='eager');
+        await delay(3200);
       });
       const state = await tab.evaluate(() => {
         const images = [...document.images];
